@@ -1,0 +1,63 @@
+# Gunakan NGINX Unit dengan PHP 8.4
+FROM unit:php8.4
+
+# Install dependensi yang dibutuhkan
+RUN apt-get update && \
+    apt-get install -y \
+    libfreetype6-dev \
+    libjpeg-dev \
+    libpng-dev \
+    zip \
+    unzip \
+    curl \
+    redis \
+    libonig-dev \
+    libxml2-dev \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Atur direktori kerja
+WORKDIR /var/www/
+
+# Salin source code ke container
+COPY . /var/www/
+
+# Instalasi Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalasi ekstensi PHP bcmath
+RUN apt-get update && apt-get install -y libbz2-dev \
+    && docker-php-ext-install bcmath
+
+RUN apt-get update && apt-get install -y libssl-dev && \
+    pecl install redis && \
+    docker-php-ext-enable redis
+
+RUN apt-get update && apt-get install -y libpq-dev && \
+    docker-php-ext-install pdo pdo_pgsql
+
+# Ubah memory_limit default untuk CLI
+RUN echo "memory_limit = 512M" >> /usr/local/etc/php/php.ini
+
+# Verifikasi bahwa Composer terinstal
+RUN composer --version
+
+# Instalasi Vendor Laravel
+RUN composer install --optimize-autoloader
+
+# Salin konfigurasi NGINX Unit JSON
+COPY ./docker/nginx/config.json /docker-entrypoint.d/config.json
+
+# Atur hak akses file ke user www-data
+RUN chown -R www-data:www-data /var/www/
+
+# EntryPoint untuk memberikan permission sebelum menjalankan Unit
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Expose port untuk PHP-FPM dan Nginx Unit
+EXPOSE 80
+
+# Jalankan NGINX Unit
+CMD ["unitd", "--no-daemon"]
