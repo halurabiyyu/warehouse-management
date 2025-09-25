@@ -40,7 +40,7 @@ WORKDIR /var/www
 
 # Copy composer files first (for better layer caching)
 COPY ./composer.json ./
-COPY ./composer.loc[k] ./
+COPY ./composer.lock ./
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
