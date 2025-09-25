@@ -19,7 +19,7 @@ return new class extends Migration
                 ->on('items')
                 ->onDelete('cascade');
             $table->unsignedBigInteger('quantity')->default(0);
-            $table->string('destination')->unique();
+            $table->string('destination');
             $table->date('shipping_date');
 
             $table->uuid('created_by')->nullable();

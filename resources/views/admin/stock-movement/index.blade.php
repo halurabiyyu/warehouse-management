@@ -25,13 +25,13 @@
     </div>
 
     <div class="fab-container">
-        <button class="btn btn-primary btn-fab shadow-lg" data-bs-toggle="modal" data-bs-target="#add-item-modal"
-            aria-label="Tambah Data">
-            <i class="fas fa-plus"></i>
+        <button class="btn btn-primary btn-fab shadow-lg" onclick="reloadDatatable(tableId)"
+            aria-label="Reload Data">
+            <i class="fas fa-sync"></i>
         </button>
     </div>
 
-    @include('admin.items.modal')
+    {{-- @include('admin.items.modal') --}}
     @push('styles')
         <style>
             .fab-container {
@@ -64,18 +64,7 @@
     @push('scripts')
         {{ $dataTable->scripts() }}
         <script>
-            const tableId = 'item-table';
-
-            // let inputNama = document.getElementById('nama');
-            // let inputNama2 = document.getElementById('nama_2');
-
-            // inputNama.addEventListener('input', function (event) {
-            //     validateInputChar(event.target);
-            // });
-
-            // inputNama2.addEventListener('input', function (event) {
-            //     validateInputChar(event.target);
-            // });
+            const tableId = 'stock-movement-table';
         </script>
     @endpush
 @endsection

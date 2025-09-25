@@ -1,13 +1,13 @@
 services:
-  pbl_app:
+  warehouse_management:
     build:
       args:
-        user: pbl_user
+        user: warehouse_management_user
         uid: 1000
       context: .
       dockerfile: Dockerfile
-    image: pbl_app
-    container_name: pbl_app
+    image: warehouse_management
+    container_name: warehouse_management
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
@@ -15,9 +15,9 @@ services:
     networks:
       - pbl_network
 
-  pbl_nginx:
+  warehouse_nginx:
     image: nginx:alpine
-    container_name: pbl_nginx
+    container_name: warehouse_nginx
     restart: unless-stopped
     ports:
       - "8022:80"
@@ -27,19 +27,19 @@ services:
     networks:
       - pbl_network
 
-  pbl_db:
+  warehouse_db:
     image: mysql:8.0
-    container_name: pbl_db
+    container_name: warehouse_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: pbl
+      MYSQL_DATABASE: warehouse_management
     ports:
       - "3307:3306"
     networks:
-      - pbl_network
+      - warehouse_network
 
 networks:
-  pbl_network:
-    name: pbl_network
+  warehouse_network:
+    name: warehouse_network
     driver: bridge

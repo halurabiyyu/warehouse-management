@@ -17,7 +17,7 @@
             </ul>
         </li>
         <li class="nav-item flex-fill">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('stock-movement.index') }}">
                 <i class="fa-solid fa-clock-rotate-left"></i>
             </a>
         </li>

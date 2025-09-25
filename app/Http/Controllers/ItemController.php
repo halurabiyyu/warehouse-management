@@ -23,10 +23,14 @@ class ItemController extends Controller
             'code' => 'required|string|max:50|unique:items,code',
             'name' => 'required|string|max:255',
             'size' => 'required|string',
-            'stock' => 'required|integer|min:0',
         ]);
 
-        BaseModel::create($validated);
+        BaseModel::create([
+            'code' => $validated['code'],
+            'name' => $validated['name'],
+            'size' => $validated['size'],
+            'stock' => 0, // Initialize stock to 0
+        ]);
 
         return redirect()->route('items.index')->with('success', 'Item created successfully');
     }
@@ -37,7 +41,6 @@ class ItemController extends Controller
             'code' => 'required|string|max:50|unique:items,code,' . $item->id,
             'name' => 'required|string|max:255',
             'size' => 'required|string',
-            'stock' => 'required|integer|min:0',
         ]);
 
         $item->update($validated);

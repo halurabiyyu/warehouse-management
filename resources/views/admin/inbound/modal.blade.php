@@ -13,9 +13,9 @@
                         <label for="inbound-name" class="form-label">Nama Barang</label>
                         <select name="item_id" id="inbound-name" class="form-select" required>
                             <option value="" disabled selected>-- Pilih Barang --</option>
-                            {{-- @foreach($inbounds as $inbound)
-                                <option value="{{ $inbound->id }}">{{ $inbound->name }} ({{ $inbound->code }})</option>
-                            @endforeach --}}
+                            @foreach($items as $item)
+                                <option value="{{ $item->id }}">{{ $item->code }} - {{ $item->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
