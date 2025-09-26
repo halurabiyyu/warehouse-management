@@ -37,6 +37,19 @@ class Inbound extends BaseModel
                 ]);
             }
         });
+
+        static::deleting(function ($inbound) {
+            $stockMovement = StockMovement::where('inbound_id', $inbound->id)->first();
+            if ($stockMovement) {
+                $stockMovement->delete();
+            }
+
+            $item = Item::find($inbound->item_id);
+            if ($item) {
+                $item->stock -= $inbound->quantity;
+                $item->save();
+            }
+        });
     }
 
     public function item()

@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Inbound as BaseModel;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -25,16 +26,9 @@ class InboundDataTable extends DataTable
             ->addColumn('aksi', function (BaseModel $row) {
                 return view('admin.inbound.action', ['inbound' => $row]);
             })
-            // ->editColumn('created_at', function (BaseModel $bidang) {
-            //     return view('components.table-timestamp', [
-            //         'date' => formatDateFromDatabase($bidang->created_at),
-            //     ]);
-            // })
-            // ->editColumn('updated_at', function (BaseModel $bidang) {
-            //     return view('components.table-timestamp', [
-            //         'date' => formatDateFromDatabase($bidang->updated_at),
-            //     ]);
-            // })
+            ->editColumn('received_date', function (BaseModel $bidang) {
+                return $bidang->received_date ? Carbon::parse($bidang->received_date)->format('d M Y') : '-';
+            })
             ->rawColumns(['aksi'])
             ->setRowId('id');
     }
