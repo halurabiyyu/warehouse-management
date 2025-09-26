@@ -61,6 +61,12 @@ class ItemDataTable extends DataTable
                     public_path('/assets/js/dataTables/drawCallback.js')
                 )
             )
+            ->language([
+                'paginate' => [
+                    'previous' => '<i class="fas fa-chevron-left"></i>',
+                    'next'     => '<i class="fas fa-chevron-right"></i>',
+                ],
+            ])
             ->orderBy('2', 'asc')
             ->select(false)
             ->buttons([]);

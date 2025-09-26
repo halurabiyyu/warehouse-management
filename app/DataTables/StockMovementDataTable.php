@@ -62,6 +62,12 @@ class StockMovementDataTable extends DataTable
                     public_path('/assets/js/dataTables/drawCallback.js')
                 )
             )
+            ->language([
+                'paginate' => [
+                    'previous' => '<i class="fas fa-chevron-left"></i>',
+                    'next'     => '<i class="fas fa-chevron-right"></i>',
+                ],
+            ])
             ->select(false)
             ->buttons([]);
     }
