@@ -15,7 +15,7 @@
     </div>
 
     <div class="fab-container">
-        <button class="btn btn-primary btn-fab shadow-lg" onclick="reloadDatatable(tableId)"
+        <button class="btn btn-primary btn-fab shadow-lg" onclick="window.location.reload();"
             aria-label="Reload Data">
             <i class="fas fa-sync"></i>
         </button>
