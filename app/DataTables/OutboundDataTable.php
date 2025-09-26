@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Outbound as BaseModel;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -30,11 +31,9 @@ class OutboundDataTable extends DataTable
             //         'date' => formatDateFromDatabase($bidang->created_at),
             //     ]);
             // })
-            // ->editColumn('updated_at', function (BaseModel $bidang) {
-            //     return view('components.table-timestamp', [
-            //         'date' => formatDateFromDatabase($bidang->updated_at),
-            //     ]);
-            // })
+            ->editColumn('shipping_date', function (BaseModel $bidang) {
+                return $bidang->shipping_date ? Carbon::parse($bidang->shipping_date)->format('d M Y') : '-';
+            })
             ->rawColumns(['aksi'])
             ->setRowId('id');
     }

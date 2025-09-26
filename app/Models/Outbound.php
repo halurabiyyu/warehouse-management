@@ -16,8 +16,14 @@ class Outbound extends BaseModel
                 'quantity' => $outbound->quantity,
                 'type' => 'keluar',
                 'outbound_id' => $outbound->id,
-                'movement_date' => $outbound->shipped_date,
+                'movement_date' => $outbound->shipping_date,
             ]);
+
+            $item = Item::find($outbound->item_id);
+            if ($item) {
+                $item->stock -= $outbound->quantity;
+                $item->save();
+            }
         });
 
         static::updated(function ($outbound) {
@@ -28,6 +34,19 @@ class Outbound extends BaseModel
                     'quantity' => $outbound->quantity,
                     'movement_date' => $outbound->shipping_date,
                 ]);
+            }
+        });
+
+        static::deleting(function ($outbound) {
+            $stockMovement = StockMovement::where('outbound_id', $outbound->id)->first();
+            if ($stockMovement) {
+                $stockMovement->delete();
+            }
+
+            $item = Item::find($outbound->item_id);
+            if ($item) {
+                $item->stock += $outbound->quantity;
+                $item->save();
             }
         });
     }

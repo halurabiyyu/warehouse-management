@@ -3,13 +3,15 @@
         <i class="fa fa-ellipsis-vertical fa-fw"></i>
     </button>
     <div class="dropdown-menu" style="">
-        <a class="text-info dropdown-item" data-bs-toggle="modal" data-target="#edit-bidang_modal" >
+        <button class="text-info dropdown-item edit-outbound-btn" data-bs-toggle="modal" data-bs-target="#edit-outbound-modal"
+            data-item-id="{{$outbound->item_id}}" data-id="{{$outbound->id}}" data-quantity="{{$outbound->quantity}}">
             <i class="far fa-edit fa-fw me-1"></i>
             <span>Ubah</span>
-        </a>
-        <a class="text-danger dropdown-item" href="#">
-            <i class="far fa-trash fa-fw me-1"></i>
+        </button>
+        <button class="text-danger dropdown-item" data-action="destroy" data-table="outbound-table"
+            data-url="{{ route('outbound.destroy', $outbound->id) }}">
+            <i class="fa-solid fa-trash fa-fw me-1"></i>
             <span>Hapus</span>
-        </a>
+        </button>
     </div>
 </div>

@@ -5,16 +5,6 @@
         <div class="d-flex flex-row justify-content-between align-items-center">
             <h3 class="card-title">Daftar Barang Keluar</h3>
         </div>
-        {{-- <div>
-            <div class="btn-group mt-4 d-flex justify-content-end">
-                <button onclick="reloadDatatable(tableId)" class="btn btn-secondary">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-item-modal">
-                    <i class="far fa-plus fa-fw"></i>
-                </button>
-            </div>
-        </div> --}}
         <div class="card mt-4" style="height: 80%">
             <div class="card-body py-4 mt-4">
                 <div class="table-responsive">
