@@ -85,6 +85,8 @@ class StockMovementDataTable extends DataTable
             //     ->width('5%')
             //     ->addClass('text-center')
             //     ->title('Aksi'),
+            Column::make('item.code')
+                ->title('Kode'),
             Column::make('item.name')
                 ->title('Nama'),
             Column::make('type')
