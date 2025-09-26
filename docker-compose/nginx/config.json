@@ -8,7 +8,7 @@
         "php": {
             "type": "php",
             "processes": 4,
-            "root": "/var/www/html/public",
+            "root": "/var/www/public",
             "index": "index.php",
             "script": "index.php"
         }
