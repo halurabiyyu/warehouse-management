@@ -30,6 +30,7 @@ services:
       - ./docker-compose/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./docker-compose/ssl/cert.pem:/etc/ssl/certs/cert.pem
       - ./docker-compose/ssl/key.pem:/etc/ssl/private/key.pem
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./:/var/www
     networks:
       - warehouse_network
