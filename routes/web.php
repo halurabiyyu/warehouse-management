@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboundController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OutboundController;
@@ -15,9 +16,7 @@ Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login-proses');
 
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard', function () {
-        return view('admin.dashboard.index');
-    })->name('dashboard');
+    Route::get('dashboard',[DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('items', ItemController::class)->names('items');
     Route::resource('inbound', InboundController::class)->names('inbound');
