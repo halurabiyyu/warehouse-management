@@ -10,31 +10,19 @@ const urlsToCache = [
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(urlsToCache);
-        })
-    );
-});
-
-// Activate
-self.addEventListener("activate", (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map((cache) => {
-                    if (cache !== CACHE_NAME) {
-                        return caches.delete(cache);
-                    }
-                })
+                urlsToCache.map((url) =>
+                    fetch(url).then((response) => {
+                        if (response.ok) {
+                            return cache.put(url, response.clone());
+                        } else {
+                            console.warn("Skip caching:", url, response.status);
+                        }
+                    }).catch((err) => {
+                        console.error("Failed to cache:", url, err);
+                    })
+                )
             );
-        })
-    );
-});
-
-// Fetch
-self.addEventListener("fetch", (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
         })
     );
 });
