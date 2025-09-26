@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Test</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4285f4">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <h1>PWA Test Page</h1>
+    <p id="status">Checking Service Worker...</p>
+    <button id="install" style="display:none;">Install PWA</button>
+    
+    <script>
+    const statusEl = document.getElementById("status");
+    
+    // Register service worker dengan detailed logging
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js")
+            .then(registration => {
+                console.log("SW registered:", registration);
+                statusEl.textContent = "Service Worker registered successfully!";
+                
+                registration.addEventListener("updatefound", () => {
+                    const newWorker = registration.installing;
+                    console.log("New SW installing...");
+                    statusEl.textContent = "Installing Service Worker...";
+                    
+                    newWorker.addEventListener("statechange", () => {
+                        console.log("SW state changed:", newWorker.state);
+                        statusEl.textContent = "SW State: " + newWorker.state;
+                        
+                        if (newWorker.state === "installed") {
+                            if (navigator.serviceWorker.controller) {
+                                statusEl.textContent = "New Service Worker installed!";
+                            } else {
+                                statusEl.textContent = "Service Worker installed and ready!";
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.error("SW registration failed:", error);
+                statusEl.textContent = "Service Worker registration failed: " + error.message;
+            });
+    } else {
+        statusEl.textContent = "Service Worker not supported";
+    }
+    
+    // PWA install prompt
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+        console.log("Install prompt ready");
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById("install").style.display = "block";
+    });
+    
+    document.getElementById("install").addEventListener("click", (e) => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((result) => {
+                console.log("Install result:", result);
+                deferredPrompt = null;
+            });
+        }
+    });
+    </script>
+</body>
+</html>
