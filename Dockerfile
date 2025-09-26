@@ -48,7 +48,7 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user \
 WORKDIR /var/www
 
 # Copy composer files first (for better caching)
-COPY --chown=$user:$user composer.json composer.lock ./
+COPY --chown=$user:$user composer.json ./
 
 # Switch to application user for composer install
 USER $user
