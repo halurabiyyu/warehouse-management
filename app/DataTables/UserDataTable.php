@@ -2,15 +2,14 @@
 
 namespace App\DataTables;
 
-use App\Models\StockMovement as BaseModel;
-use Carbon\Carbon;
+use App\Models\User as BaseModel;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class StockMovementDataTable extends DataTable
+class UserDataTable extends DataTable
 {
     public $user = null;
 
@@ -23,33 +22,34 @@ class StockMovementDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            // ->addColumn('aksi', function (BaseModel $row) {
-            //     return view('admin.stock-movement.action', ['item' => $row]);
+            ->addColumn('aksi', function (BaseModel $row) {
+                return view('admin.items.action', ['item' => $row]);
+            })
+            // ->editColumn('created_at', function (BaseModel $bidang) {
+            //     return view('components.table-timestamp', [
+            //         'date' => formatDateFromDatabase($bidang->created_at),
+            //     ]);
             // })
-            ->editColumn('type', function (BaseModel $baseModel) {
-                $html = '<span class="badge bg-' . ($baseModel->type == 'masuk' ? 'success' : 'danger') . '">' . strtoupper($baseModel->type) . '</span>';
-
-                return $html;
-            })
-            ->editColumn('movement_date', function (BaseModel $baseModel) {
-                return $baseModel->movement_date ? Carbon::parse($baseModel->movement_date)->format('d M Y') : '-';
-            })
-            ->rawColumns(['aksi', 'type'])
+            // ->editColumn('updated_at', function (BaseModel $bidang) {
+            //     return view('components.table-timestamp', [
+            //         'date' => formatDateFromDatabase($bidang->updated_at),
+            //     ]);
+            // })
+            ->rawColumns(['aksi'])
             ->setRowId('id');
     }
 
     public function query(BaseModel $model): QueryBuilder
     {
         return $model
-            ->with('item')
-            ->orderBy('movement_date', 'desc')
+            ->orderBy('name', 'asc')
             ->newQuery();
     }
 
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('stock-movement-table')
+            ->setTableId('item-table')
             ->columns($this->getColumns())
             ->minifiedAjax(script: "
                         data._token = '" . csrf_token() . "';
@@ -62,6 +62,7 @@ class StockMovementDataTable extends DataTable
                     public_path('/assets/js/dataTables/drawCallback.js')
                 )
             )
+            ->orderBy('2', 'asc')
             ->select(false)
             ->buttons([]);
     }
@@ -73,21 +74,29 @@ class StockMovementDataTable extends DataTable
                 ->title('No.')
                 ->addClass('text-center')
                 ->width('5%'),
-            // Column::computed('aksi')
-            //     ->exportable(false)
-            //     ->printable(false)
-            //     ->width('5%')
-            //     ->addClass('text-center')
-            //     ->title('Aksi'),
-            Column::make('item.name')
+            Column::computed('aksi')
+                ->exportable(false)
+                ->printable(false)
+                ->width('5%')
+                ->addClass('text-center')
+                ->title('Aksi'),
+            Column::make('code')
+                ->title('Kode'),
+            Column::make('name')
                 ->title('Nama'),
-            Column::make('type')
-                ->title('Tipe'),
-            Column::make('quantity')
-                ->title('Jumlah'),
-            Column::make('movement_date')
-                ->title('Tanggal Pergerakan')
+            Column::make('stock')
+                ->title('Stok')
         ];
+
+        // if ($this->user->isSuperAdmin()) {
+        //     $columns[] =  Column::make('lsp.nama')
+        //         ->title('LSP')
+        //         ->width('25%');
+        // }
+
+        $columns[] =  Column::make('updated_at')
+            ->title('Terakhir Diubah')
+            ->width('25%');
 
         return $columns;
     }
