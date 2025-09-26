@@ -5,16 +5,36 @@
         <div class="d-flex flex-row justify-content-between align-items-center">
             <h3 class="card-title">Daftar Barang</h3>
         </div>
-        {{-- <div>
-            <div class="btn-group mt-4 d-flex justify-content-end">
-                <button onclick="reloadDatatable(tableId)" class="btn btn-secondary">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-item-modal">
-                    <i class="far fa-plus fa-fw"></i>
-                </button>
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert" id="success-alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        </div> --}}
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert" id="error-alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert" id="validation-alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Terjadi kesalahan:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="card mt-4" style="height: 80%">
             <div class="card-body py-4 mt-4">
                 <div class="table-responsive">
@@ -32,6 +52,7 @@
     </div>
 
     @include('admin.items.modal')
+    
     @push('styles')
         <style>
             .fab-container {
@@ -59,23 +80,87 @@
             .btn-fab:active {
                 transform: scale(0.95);
             }
+
+            /* Loading spinner animation */
+            .spinner-border-sm {
+                width: 1rem;
+                height: 1rem;
+            }
         </style>
     @endpush
+    
     @push('scripts')
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         {{ $dataTable->scripts() }}
+        
         <script>
-            const tableId = 'item-table';
+            const tableId = '{{ isset($tableId) ? $tableId : "item-table" }}';
 
-            // let inputNama = document.getElementById('nama');
-            // let inputNama2 = document.getElementById('nama_2');
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto dismiss success alerts
+                const successAlert = document.getElementById('success-alert');
+                if (successAlert) {
+                    setTimeout(function() {
+                        const alert = new bootstrap.Alert(successAlert);
+                        alert.close();
+                    }, 5000);
+                }
 
-            // inputNama.addEventListener('input', function (event) {
-            //     validateInputChar(event.target);
-            // });
+                // Auto dismiss error alerts
+                const errorAlert = document.getElementById('error-alert');
+                if (errorAlert) {
+                    setTimeout(function() {
+                        const alert = new bootstrap.Alert(errorAlert);
+                        alert.close();
+                    }, 8000);
+                }
 
-            // inputNama2.addEventListener('input', function (event) {
-            //     validateInputChar(event.target);
-            // });
+                // Show validation errors with SweetAlert if any
+                @if($errors->any())
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan!',
+                        html: '<ul style="text-align: left;">' +
+                            @foreach($errors->all() as $error)
+                                '<li>{{ $error }}</li>' +
+                            @endforeach
+                            '</ul>',
+                        confirmButtonText: 'OK'
+                    });
+                @endif
+
+                // Show success message with SweetAlert
+                @if(session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: '{{ session('success') }}',
+                        timer: 3000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                @endif
+
+                // Show error message with SweetAlert
+                @if(session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan!',
+                        text: '{{ session('error') }}',
+                        confirmButtonText: 'OK'
+                    });
+                @endif
+            });
+
+            // Global function to refresh DataTable (can be called from modal)
+            function refreshDataTable() {
+                if (window.LaravelDataTables && window.LaravelDataTables[tableId]) {
+                    window.LaravelDataTables[tableId].ajax.reload();
+                }
+            }
         </script>
     @endpush
 @endsection

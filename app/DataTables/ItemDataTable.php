@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Item as BaseModel;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -30,11 +31,9 @@ class ItemDataTable extends DataTable
             //         'date' => formatDateFromDatabase($bidang->created_at),
             //     ]);
             // })
-            // ->editColumn('updated_at', function (BaseModel $bidang) {
-            //     return view('components.table-timestamp', [
-            //         'date' => formatDateFromDatabase($bidang->updated_at),
-            //     ]);
-            // })
+            ->editColumn('updated_at', function (BaseModel $bidang) {
+                return $bidang->updated_at ? Carbon::parse($bidang->updated_at)->format('d M Y') : '-';
+            })
             ->rawColumns(['aksi'])
             ->setRowId('id');
     }
@@ -84,6 +83,8 @@ class ItemDataTable extends DataTable
                 ->title('Kode'),
             Column::make('name')
                 ->title('Nama'),
+            Column::make('size')
+                ->title('Ukuran'),
             Column::make('stock')
                 ->title('Stok')
         ];

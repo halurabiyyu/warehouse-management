@@ -6,51 +6,179 @@ use App\DataTables\ItemDataTable;
 use Dflydev\DotAccessData\Data;
 use App\Models\Item as BaseModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Services\DataTable;
 
 class ItemController extends Controller
 {
-    public function index(ItemDataTable $dataTable){
+    public function index(ItemDataTable $dataTable)
+    {
 
         return $dataTable->render('admin.items.index');
     }
-    public function show($id){
+    public function show($id)
+    {
         // $item = BaseModel::findOrFail($id);
         // return view('admin.items.show', compact('item'));
     }
-    public function store(Request $request){
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:items,code',
-            'name' => 'required|string|max:255',
-            'size' => 'required|string',
-        ]);
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
 
-        BaseModel::create([
-            'code' => $validated['code'],
-            'name' => $validated['name'],
-            'size' => $validated['size'],
-            'stock' => 0, // Initialize stock to 0
-        ]);
+        try {
+            $validated = $request->validate([
+                'code' => 'required|string|max:50|unique:items,code',
+                'name' => 'required|string|max:255',
+                'size' => 'required|string',
+            ], [
+                'code.required' => 'Nama barang wajib dipilih.',
+                'code.unique' => 'Kode barang sudah digunakan.',
+                'code.max' => 'Kode barang maksimal 50 karakter.',
 
-        return redirect()->route('items.index')->with('success', 'Item created successfully');
+                'name.required' => 'Nama barang wajib diisi.',
+                'name.max' => 'Nama barang maksimal 255 karakter.',
+
+                'size.required' => 'Ukuran barang wajib diisi.',
+            ]);
+
+            $item = BaseModel::create([
+                'code' => $validated['code'],
+                'name' => $validated['name'],
+                'size' => $validated['size'],
+                'stock' => 0,
+            ]);
+
+            DB::commit();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Barang berhasil ditambahkan',
+                    'data' => $item
+                ]);
+            }
+
+            return redirect()->route('items.index')->with('success', 'Item created successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menambahkan barang. Silakan coba lagi. ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan barang. Silakan coba lagi.');
+        }
     }
-    public function update(Request $request, $id){
-        $item = BaseModel::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $item = BaseModel::findOrFail($id);
 
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:items,code,' . $item->id,
-            'name' => 'required|string|max:255',
-            'size' => 'required|string',
-        ]);
+            $validated = $request->validate([
+                'code' => 'required|string|max:50|unique:items,code,' . $item->id,
+                'name' => 'required|string|max:255',
+                'size' => 'required|string',
+            ], [
+                'code.required' => 'Nama barang wajib dipilih.',
+                'code.unique' => 'Kode barang sudah digunakan.',
+                'code.max' => 'Kode barang maksimal 50 karakter.',
 
-        $item->update($validated);
+                'name.required' => 'Nama barang wajib diisi.',
+                'name.max' => 'Nama barang maksimal 255 karakter.',
 
-        return redirect()->route('items.index')->with('success', 'Item updated successfully');
+                'size.required' => 'Ukuran barang wajib diisi.',
+            ]);
+
+            $item->update($validated);
+
+            DB::commit();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Barang berhasil diperbarui',
+                    'data' => $item
+                ]);
+            }
+
+            return redirect()->route('items.index')->with('success', 'Item updated successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menambahkan barang. Silakan coba lagi.'
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan barang. Silakan coba lagi.');
+        }
     }
-    public function destroy($id){
-        $item = BaseModel::findOrFail($id);
-        $item->delete();
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $item = BaseModel::findOrFail($id);
+            $item->delete();
 
-        return redirect()->route('items.index')->with('success', 'Item deleted successfully');
+            DB::commit();
+
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item berhasil dihapus',
+                ]);
+            }
+
+            return redirect()->route('items.index')->with('success', 'Item deleted successfully');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus item: ' . $th->getMessage(),
+                ], 500);
+            }
+            
+            return redirect()->route('items.index')->with('error', 'Error: ' . $th->getMessage());
+        }
     }
 }
