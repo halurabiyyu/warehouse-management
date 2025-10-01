@@ -62,7 +62,7 @@ class InboundDataTable extends DataTable
                     'next'     => '<i class="fas fa-chevron-right"></i>',
                 ],
             ])
-            ->orderBy('4', 'desc')
+            ->orderBy('6', 'desc')
             ->select(false)
             ->buttons([]);
     }
@@ -80,8 +80,12 @@ class InboundDataTable extends DataTable
                 ->width('5%')
                 ->addClass('text-center')
                 ->title('Aksi'),
+            Column::make('item.code')
+                ->title('Kode Barang'),
             Column::make('item.name')
                 ->title('Nama Barang'),
+            Column::make('item.size')
+                ->title('Ukuran'),
             Column::make('quantity')
                 ->title('Jumlah'),
             Column::make('received_date')

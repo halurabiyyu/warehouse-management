@@ -41,7 +41,6 @@ class ItemDataTable extends DataTable
     public function query(BaseModel $model): QueryBuilder
     {
         return $model
-            ->orderBy('name', 'asc')
             ->newQuery();
     }
 
@@ -67,7 +66,7 @@ class ItemDataTable extends DataTable
                     'next'     => '<i class="fas fa-chevron-right"></i>',
                 ],
             ])
-            ->orderBy('2', 'asc')
+            ->orderBy('3', 'asc')
             ->select(false)
             ->buttons([]);
     }
