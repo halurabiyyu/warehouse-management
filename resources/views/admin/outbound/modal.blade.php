@@ -54,6 +54,7 @@
                 <div class="modal-body">
                     @csrf
                     <div class="mb-3">
+                        <input type="hidden" id="edit-outbound-id" name="id">
                         <label for="edit-outbound-name" class="form-label">Nama Barang</label>
                         <select name="item_id" id="edit-outbound-name" class="form-select" required>
                             <option value="" disabled selected>-- Pilih Barang --</option>
@@ -242,10 +243,10 @@
             const quantity = button.dataset.quantity;
             const receivedDate = button.dataset.receivedDate;
 
-            document.getElementById('edit-inbound-id').value = id;
-            document.getElementById('edit-inbound-name').value = itemId;
-            document.getElementById('edit-inbound-quantity').value = quantity;
-            document.getElementById('edit-inbound-date').value = receivedDate;
+            document.getElementById('edit-outbound-id').value = id;
+            document.getElementById('edit-outbound-name').value = itemId;
+            document.getElementById('edit-outbound-quantity').value = quantity;
+            document.getElementById('edit-outbound-date').value = receivedDate;
 
             bootstrap.Modal.getOrCreateInstance(editModal).show();
         });
