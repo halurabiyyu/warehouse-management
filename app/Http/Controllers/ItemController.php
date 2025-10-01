@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\DetailItemDataTable;
 use App\DataTables\ItemDataTable;
 use Dflydev\DotAccessData\Data;
 use App\Models\Item as BaseModel;
@@ -16,10 +17,11 @@ class ItemController extends Controller
 
         return $dataTable->render('admin.items.index');
     }
-    public function show($id)
+    public function show(DetailItemDataTable $dataTable, $id)
     {
-        // $item = BaseModel::findOrFail($id);
-        // return view('admin.items.show', compact('item'));
+        $item = BaseModel::findOrFail($id);
+
+        return $dataTable->with('item_id', $id)->render('admin.items.show', compact('item'));
     }
     public function store(Request $request)
     {
